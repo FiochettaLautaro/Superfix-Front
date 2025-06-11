@@ -15,15 +15,7 @@ class SuperFixAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: Color(0xFFFF5963),
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.list),
-          iconSize: 32,
-          onPressed: () {
-            Navigator.pushNamed(context, '/menu');
-          },
-        ),
-      ],
+      actions: [],
     );
   }
 

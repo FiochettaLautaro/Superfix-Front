@@ -3,7 +3,7 @@ import 'package:app_sin_nombre/widgets/home_widgets/cards/target.dart' as card;
 import 'package:flutter/material.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/barra_superior.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/search/search.dart';
-import 'package:app_sin_nombre/controllers/home_service.dart';
+import 'package:app_sin_nombre/services/home_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -39,28 +39,55 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const SizedBox(height: 10),
-              const SuperSearch(),
-              FutureBuilder<List<model.Target_post>>(
-                future: _targetsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Text("No se encontraron profesionales.");
-                  } else {
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        final post = snapshot.data![index];
-                        return card.Target(data: post);
+              const SizedBox(height: 10),
+              // Container mejorado para UI amigable
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const SuperSearch(),
+                    const SizedBox(height: 16),
+                    FutureBuilder<List<model.Target_post>>(
+                      future: _targetsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("Error: ${snapshot.error}");
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Text("No se encontraron profesionales.");
+                        } else {
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data!.length,
+                            separatorBuilder:
+                                (context, index) => const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final post = snapshot.data![index];
+                              return card.Target(data: post);
+                            },
+                          );
+                        }
                       },
-                    );
-                  }
-                },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
