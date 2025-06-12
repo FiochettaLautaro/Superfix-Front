@@ -2,6 +2,7 @@ import 'package:app_sin_nombre/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:app_sin_nombre/services/user_service.dart';
+import 'package:app_sin_nombre/globals.dart';
 
 class AuthService {
   Future<void> signInWithGoogle() async {
@@ -21,15 +22,20 @@ class AuthService {
     final User? user = userCredential.user;
 
     if (user != null) {
+      Globals.userId = user.uid;
+      print('user_id asignado: ${Globals.userId}');
+      Globals.userName = user.displayName ?? '';
+      Globals.userEmail = user.email ?? '';
+      Globals.userImageUrl = user.photoURL ?? '';
+
+      /*print('UID: ${user.uid}');
+      print('Nombre: ${user.displayName}');
+      print('Email: ${user.email}');
+      print('Foto: ${user.photoURL}');*/
+
       var userService = UserService();
       var resultado = await userService.getUserById(user.uid);
       if (resultado == null) {
-        print('Usuario no encontrado, creando nuevo usuario...');
-        print('UID: ${user.uid}');
-        print('Nombre: ${user.displayName}');
-        print('Email: ${user.email}');
-        print('URL Imagen: ${user.photoURL}');
-        print('Número de Celular: ${user.phoneNumber}');
         final newUser = AppUser.fromFirebase(user);
         await userService.createUser(newUser);
       }

@@ -36,7 +36,7 @@ class _MibotonState extends State<BotonSearch> {
       child: Text(
         widget.texto,
         style: TextStyle(
-          fontSize: 11, // Más chico
+          fontSize: 12, // Más chico
           color: valor ? const Color(0xFF2B2B2B) : const Color(0xFFFF5963),
         ),
       ),

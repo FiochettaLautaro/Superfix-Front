@@ -1,9 +1,13 @@
+import 'dart:developer';
+
+import 'package:app_sin_nombre/globals.dart';
 import 'package:app_sin_nombre/services/home_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:app_sin_nombre/models/target_post.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/cards/boton_like.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Target extends StatefulWidget {
   final Target_post data;
@@ -16,9 +20,13 @@ class Target extends StatefulWidget {
 class _TargetState extends State<Target> {
   int _indiceImagen = 0;
   late Timer _timer;
-  bool like = false;
+
+  String? post_id = '';
   TargetService service = TargetService();
   Map<String, String> nombresRubros = {};
+  String? user_id = Globals.userId;
+
+  bool like = false;
 
   @override
   void initState() {
@@ -30,6 +38,14 @@ class _TargetState extends State<Target> {
       });
     });
     _cargarNombresRubros();
+    _initLike();
+  }
+
+  Future<void> _initLike() async {
+    bool result = await service.likeRub(widget.data.id, user_id ?? '');
+    setState(() {
+      like = result;
+    });
   }
 
   Future<void> _cargarNombresRubros() async {
@@ -59,9 +75,9 @@ class _TargetState extends State<Target> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        boxShadow: [
+        /*boxShadow: [
           BoxShadow(color: Colors.grey.withOpacity(0.5), blurRadius: 5),
-        ],
+        ],*/
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,9 +107,9 @@ class _TargetState extends State<Target> {
                           constraints: const BoxConstraints(maxWidth: 140),
                           child: Text(
                             widget.data.title,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -170,9 +186,13 @@ class _TargetState extends State<Target> {
                             Icons.favorite,
                             color: like ? Colors.red : Colors.grey,
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            TargetService service = TargetService();
+                            bool result = await service.AdlikeRub(
+                              widget.data.id,
+                            );
                             setState(() {
-                              like = !like;
+                              like = result;
                             });
                           },
                         ),
