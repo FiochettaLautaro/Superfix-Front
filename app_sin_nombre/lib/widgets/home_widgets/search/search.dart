@@ -39,7 +39,6 @@ class _SuperSearchState extends State<SuperSearch> {
   void toggleFavoritos() {
     setState(() {
       filtros.setMatriculado(!(filtros.matriculado ?? false));
-
       actualizarBusqueda();
     });
   }
@@ -59,6 +58,21 @@ class _SuperSearchState extends State<SuperSearch> {
         actualizarBusqueda();
       });
     }
+  }
+
+  void _limpiarFiltros() {
+    setState(() {
+      filtros.setText('');
+      filtros.setRubros([]);
+      filtros.setMatriculado(false);
+      filtros.setUbicacion(-32.8908, -68.8272); // Mendoza
+      _controller.clear();
+      Globals.filtro?.setText('');
+      Globals.filtro?.setRubros([]);
+      Globals.filtro?.setMatriculado(false);
+      Globals.filtro?.setUbicacion(-32.8908, -68.8272); // Mendoza
+      actualizarBusqueda();
+    });
   }
 
   @override
@@ -160,7 +174,6 @@ class _SuperSearchState extends State<SuperSearch> {
                     });
                   },
                 ),
-
                 const SizedBox(width: 6),
                 CustomToggleButton(
                   texto: 'Recomendado por App',
@@ -168,6 +181,18 @@ class _SuperSearchState extends State<SuperSearch> {
                   onToggle: toggleRecomendado,
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              icon: const Icon(Icons.clear, color: Color(0xFFFF5963)),
+              label: const Text(
+                "Limpiar filtros",
+                style: TextStyle(color: Color(0xFFFF5963)),
+              ),
+              onPressed: _limpiarFiltros,
             ),
           ),
         ],

@@ -19,11 +19,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TargetService _targetService = TargetService();
   late Future<List<model.Target_post>> _targetsFuture;
+  int _selectedIndex = 1;
 
   @override
   void initState() {
     super.initState();
-    // Búsqueda inicial sin filtros
     _targetsFuture = _targetService.searchApp();
   }
 
@@ -40,6 +40,17 @@ class _MyHomePageState extends State<MyHomePage> {
         longitud: filtros.longitud,
       );
     });
+  }
+
+  void _onNavTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _onCreatePost() {
+    print("Crear post");
+    // Navigator.push(context, MaterialPageRoute(builder: (_) => CrearPostScreen()));
   }
 
   @override
@@ -59,9 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const SizedBox(height: 10),
-
               SuperSearch(onFilterChanged: _actualizarBusqueda),
-
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
@@ -89,16 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               return const Center(
                                 child: CircularProgressIndicator(),
                               );
-                            } else if (snapshot.hasError) {
-                              return Text(
-                                "No se encontraron profesionales.",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              );
-                            } else if (!snapshot.hasData ||
+                            } else if (snapshot.hasError ||
+                                !snapshot.hasData ||
                                 snapshot.data!.isEmpty) {
                               return const Text(
                                 "No se encontraron profesionales.",
@@ -131,6 +132,33 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            if (index == 3) {
+              _onCreatePost();
+            } else {
+              _onNavTapped(index);
+            }
+          },
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: const Color(0xFFFF5963),
+          unselectedItemColor: Colors.grey,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border),
+              label: 'Favoritos',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_box_outlined),
+              label: 'Crear Aviso',
+            ),
+          ],
         ),
       ),
     );
