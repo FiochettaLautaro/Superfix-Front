@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               const SizedBox(height: 16),
               Container(
+                width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(144, 233, 227, 227),
@@ -88,11 +89,23 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: CircularProgressIndicator(),
                               );
                             } else if (snapshot.hasError) {
-                              return Text("Error: ${snapshot.error}");
+                              return Text(
+                                "No se encontraron profesionales.",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
                             } else if (!snapshot.hasData ||
                                 snapshot.data!.isEmpty) {
                               return const Text(
                                 "No se encontraron profesionales.",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               );
                             } else {
                               return ListView.separated(

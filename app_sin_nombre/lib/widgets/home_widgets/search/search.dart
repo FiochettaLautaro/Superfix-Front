@@ -1,6 +1,8 @@
 import 'package:app_sin_nombre/globals.dart';
 import 'package:app_sin_nombre/models/search.dart';
+import 'package:app_sin_nombre/screens/mapa.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 class SuperSearch extends StatefulWidget {
   final Function(FiltrosBusqueda) onFilterChanged;
@@ -85,7 +87,7 @@ class _SuperSearchState extends State<SuperSearch> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.search,
-                      color: Colors.black,
+                      color: Color.fromARGB(255, 255, 255, 255),
                       size: 20,
                     ),
                     padding: EdgeInsets.zero,
@@ -103,8 +105,27 @@ class _SuperSearchState extends State<SuperSearch> {
               children: [
                 BotonIcon(
                   texto: 'Ubicación',
-                  onPressed: () {
-                    // TODO: lógica ubicación
+                  onPressed: () async {
+                    final LatLng? location = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MapaScreen(),
+                      ),
+                    );
+
+                    if (location != null) {
+                      setState(() {
+                        filtros.setUbicacion(
+                          location.latitude,
+                          location.longitude,
+                        );
+                        Globals.filtro?.setUbicacion(
+                          location.latitude,
+                          location.longitude,
+                        );
+                        actualizarBusqueda();
+                      });
+                    }
                   },
                 ),
                 const SizedBox(width: 6),
