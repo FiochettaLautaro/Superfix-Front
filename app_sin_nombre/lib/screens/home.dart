@@ -1,6 +1,7 @@
 import 'package:app_sin_nombre/models/search.dart';
 import 'package:app_sin_nombre/models/target_post.dart' as model;
 import 'package:app_sin_nombre/models/user.dart';
+import 'package:app_sin_nombre/screens/select_rubs.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/cards/target.dart' as card;
 import 'package:flutter/material.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/barra_superior.dart';

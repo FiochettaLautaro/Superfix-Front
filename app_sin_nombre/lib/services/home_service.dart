@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:app_sin_nombre/globals.dart';
+import 'package:app_sin_nombre/models/rub.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_sin_nombre/models/target_post.dart';
 
@@ -33,6 +34,16 @@ class TargetService {
       throw Exception(
         "Error al obtener el rubro ($id_rub): ${response.statusCode}",
       );
+    }
+  }
+
+  Future<List<Rubro>> getRubros() async {
+    final response = await http.get(Uri.parse(baseUrl1));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = json.decode(response.body);
+      return jsonList.map((json) => Rubro.fromJson(json)).toList();
+    } else {
+      throw Exception("Error al cargar los rubros");
     }
   }
 

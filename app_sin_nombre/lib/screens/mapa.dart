@@ -39,6 +39,7 @@ class _MapaScreenState extends State<MapaScreen> {
               _selectedLocation = latlng;
             });
           },
+          // ignore: deprecated_member_use
           interactiveFlags:
               InteractiveFlag.all, // Esto habilita todos los gestos
         ),

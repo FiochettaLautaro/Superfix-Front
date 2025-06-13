@@ -1,6 +1,7 @@
 import 'package:app_sin_nombre/globals.dart';
 import 'package:app_sin_nombre/models/search.dart';
 import 'package:app_sin_nombre/screens/mapa.dart';
+import 'package:app_sin_nombre/screens/select_rubs.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -47,6 +48,17 @@ class _SuperSearchState extends State<SuperSearch> {
     setState(() {
       actualizarBusqueda();
     });
+  }
+
+  void _mostrarRubros() async {
+    final rubroSeleccionado = await mostrarSelectorRubro(context);
+    if (rubroSeleccionado != null) {
+      setState(() {
+        filtros.setRubros([rubroSeleccionado]);
+        Globals.filtro?.setRubros([rubroSeleccionado]);
+        actualizarBusqueda();
+      });
+    }
   }
 
   @override
@@ -132,7 +144,7 @@ class _SuperSearchState extends State<SuperSearch> {
                 BotonSearch(
                   texto: 'Rubro',
                   onPressed: () {
-                    // TODO: lógica rubro
+                    _mostrarRubros();
                   },
                 ),
                 const SizedBox(width: 6),
