@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:app_sin_nombre/models/target_post.dart';
 
 class TargetService {
-  final String baseUrl = "http://10.0.2.2:5000/api/post";
-  final String baseUrl1 = "http://10.0.2.2:5000/api/rubs/";
-  final String baseUrl2 = "http://10.0.2.2:5000/api/favorites/one";
-  final String baseUrl3 = "http://10.0.2.2:5000/api/favorites";
+  final String baseUrl = "http://192.168.1.33:5000/api/post";
+  final String baseUrl1 = "http://192.168.1.33:5000/api/rubs/";
+  final String baseUrl2 = "http://192.168.1.33:5000/api/favorites/one";
+  final String baseUrl3 = "http://192.168.1.33:5000/api/favorites";
 
   Future<List<Target_post>> fetchTargets() async {
     final response = await http.get(Uri.parse(baseUrl));
@@ -67,7 +67,7 @@ class TargetService {
     if (longitud != null) queryParameters['longitud'] = longitud.toString();
     if (latitud != null) queryParameters['latitud'] = latitud.toString();
 
-    final uri = Uri.http('10.0.2.2:5000', '/api/post', queryParameters);
+    final uri = Uri.http('192.168.1.33:5000', '/api/post', queryParameters);
 
     final response = await http.get(
       uri,

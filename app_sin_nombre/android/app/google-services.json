@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "1075155331577",
-    "project_id": "authappsinnombre",
-    "storage_bucket": "authappsinnombre.firebasestorage.app"
+    "project_number": "337177844285",
+    "project_id": "nube-560f3",
+    "storage_bucket": "nube-560f3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1075155331577:android:3ce99a62e10cbe8f0bf528",
+        "mobilesdk_app_id": "1:337177844285:android:027902fbd39f5c550c6854",
         "android_client_info": {
-          "package_name": "com.company.AppSinNombre"
+          "package_name": "com.example.app_sin_nombre2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1075155331577-ust6ulgkt4j38651mh45tcf1v54rgchd.apps.googleusercontent.com",
+          "client_id": "337177844285-jgc97ba8915oep5djm55ohp21nfkihn6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.app_sin_nombre2",
+            "certificate_hash": "52e9a1d31d1c389c635fc99e30de0ba40f52b0fc"
+          }
+        },
+        {
+          "client_id": "337177844285-hv8eqd8faj1gp2rtooa2lakbqggrmg6b.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyASgmtisM2Q8AeziSRcps1iJS8bUg4Py7A"
+          "current_key": "AIzaSyCW98-ocXpIcHW5aDr09mztBcPo3SWt6xE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1075155331577-ust6ulgkt4j38651mh45tcf1v54rgchd.apps.googleusercontent.com",
+              "client_id": "337177844285-hv8eqd8faj1gp2rtooa2lakbqggrmg6b.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -36,35 +44,35 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1075155331577:android:03bc74663bfa0cf60bf528",
+        "mobilesdk_app_id": "1:337177844285:android:96eca1c389dcaedf0c6854",
         "android_client_info": {
-          "package_name": "com.example.app_sin_nombre"
+          "package_name": "com.superfix.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1075155331577-qgdegh6b7if61hfgdoc81171sreurams.apps.googleusercontent.com",
+          "client_id": "337177844285-4s099cl4hmu6cn3og8vl77rva4tcsm5g.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.app_sin_nombre",
+            "package_name": "com.superfix.app",
             "certificate_hash": "52e9a1d31d1c389c635fc99e30de0ba40f52b0fc"
           }
         },
         {
-          "client_id": "1075155331577-ust6ulgkt4j38651mh45tcf1v54rgchd.apps.googleusercontent.com",
+          "client_id": "337177844285-hv8eqd8faj1gp2rtooa2lakbqggrmg6b.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyASgmtisM2Q8AeziSRcps1iJS8bUg4Py7A"
+          "current_key": "AIzaSyCW98-ocXpIcHW5aDr09mztBcPo3SWt6xE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1075155331577-ust6ulgkt4j38651mh45tcf1v54rgchd.apps.googleusercontent.com",
+              "client_id": "337177844285-hv8eqd8faj1gp2rtooa2lakbqggrmg6b.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

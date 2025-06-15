@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:app_sin_nombre/models/user.dart';
 
 class UserService {
-  final String baseUrl = "http://10.0.2.2:5000/api/users/";
+  final String baseUrl = "http://192.168.1.33:5000/api/users/";
 
   Future<List<AppUser>> getUsers() async {
     try {
@@ -45,6 +45,14 @@ class UserService {
       print('POST $baseUrl');
       print('Status: ${response.statusCode}');
       print('Body: ${response.body}');
+      if (response.statusCode == 400) {
+        final body = json.decode(response.body);
+        if (body["Error"] == "El correo ya existe") {
+          // No lanzar excepción, solo continuar
+          print('El correo ya existe, se continúa el flujo.');
+          return;
+        }
+      }
       if (response.statusCode != 201) {
         throw Exception("Failed to create user");
       }

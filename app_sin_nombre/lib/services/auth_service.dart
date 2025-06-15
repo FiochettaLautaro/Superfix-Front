@@ -23,7 +23,7 @@ class AuthService {
 
     if (user != null) {
       Globals.userId = user.uid;
-      print('user_id asignado: ${Globals.userId}');
+
       Globals.userName = user.displayName ?? '';
       Globals.userEmail = user.email ?? '';
       Globals.userImageUrl = user.photoURL ?? '';
@@ -33,6 +33,7 @@ class AuthService {
       print('Email: ${user.email}');
       print('Foto: ${user.photoURL}');*/
 
+      print('user_id asignado: ${Globals.userId}');
       var userService = UserService();
       var resultado = await userService.getUserById(user.uid);
       if (resultado == null) {
