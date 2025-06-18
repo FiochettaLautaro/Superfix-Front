@@ -1,13 +1,36 @@
 import 'package:app_sin_nombre/models/search.dart';
 import 'package:app_sin_nombre/models/target_post.dart' as model;
 import 'package:app_sin_nombre/models/user.dart';
+import 'package:app_sin_nombre/screens/main_scaffold.dart';
+import 'package:app_sin_nombre/screens/publicar_aviso_completo.dart';
 import 'package:app_sin_nombre/screens/select_rubs.dart';
-import 'package:app_sin_nombre/widgets/home_widgets/cards/target.dart' as card;
+import 'package:app_sin_nombre/widgets/home_widgets/target/target.dart' as card;
 import 'package:flutter/material.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/barra_superior.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/search/search.dart';
 import 'package:app_sin_nombre/services/home_service.dart';
 import 'package:app_sin_nombre/globals.dart';
+import 'package:app_sin_nombre/screens/favorites.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const MainScaffold(),
+      routes: {
+        '/crear_aviso': (_) => const PublicarAvisoCompleto(),
+        // Agrega más rutas si lo necesitas
+      },
+    );
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -46,11 +69,19 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const FavoritesPage()),
+      );
+    }
   }
 
   void _onCreatePost() {
-    print("Crear post");
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => CrearPostScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PublicarAvisoCompleto()),
+    );
   }
 
   @override

@@ -47,6 +47,67 @@ class TargetService {
     }
   }
 
+  Future<Target_post> getPostById(String id) async {
+    final response = await http.get(
+      Uri.parse('http://192.168.1.33:5000/api/post/searchById/$id'),
+    );
+    print("[getPostById] Post ID: $id");
+    print("[getPostById] Response: ${response.body}");
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return Target_post.fromJson(jsonData);
+    } else {
+      throw Exception("Error al cargar el post con ID: $id");
+    }
+  }
+
+  Future<List<Target_post>> getFavorites() async {
+    String? user_id = Globals.userId;
+    var url = "http://192.168.1.33:5000/api/favorites/all/$user_id";
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+    );
+    print("[getFavorites] Response: ${response.body}");
+    if (response.statusCode == 200) {
+      final dynamic decoded = json.decode(response.body);
+      final List<Target_post> posts = [];
+      if (decoded is List) {
+        // Puede ser lista de strings o lista de objetos
+        for (var item in decoded) {
+          String? postId;
+          if (item is String) {
+            postId = item;
+          } else if (item is Map && item.containsKey('post_id')) {
+            var postIdField = item['post_id'];
+            if (postIdField is List && postIdField.isNotEmpty) {
+              postId = postIdField[0];
+            } else if (postIdField is String) {
+              postId = postIdField;
+            }
+          }
+          if (postId != null) {
+            print("[getFavorites] Post ID extraído: $postId");
+            try {
+              Target_post post = await getPostById(postId);
+              post.like = true;
+              posts.add(post);
+            } catch (e) {
+              print("[getFavorites] Error al obtener post $postId: $e");
+            }
+          } else {
+            print("[getFavorites] No se pudo extraer post_id de: $item");
+          }
+        }
+      } else {
+        print("[getFavorites] Respuesta inesperada: ${response.body}");
+      }
+      return posts;
+    } else {
+      throw Exception("Error al cargar los favoritos");
+    }
+  }
+
   /// Busca posts según los parámetros proporcionados
   Future<List<Target_post>> searchApp({
     String? text,

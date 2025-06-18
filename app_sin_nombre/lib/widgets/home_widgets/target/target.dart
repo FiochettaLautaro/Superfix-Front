@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:app_sin_nombre/models/target_post.dart';
-import 'package:app_sin_nombre/widgets/home_widgets/cards/boton_like.dart';
+import 'package:app_sin_nombre/widgets/home_widgets/target/boton_like.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Target extends StatefulWidget {
@@ -32,7 +32,7 @@ class _TargetState extends State<Target> {
   void initState() {
     super.initState();
     like = widget.data.like;
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 7), (timer) {
       setState(() {
         _indiceImagen = (_indiceImagen + 1) % widget.data.imagenes.length;
       });
@@ -83,8 +83,8 @@ class _TargetState extends State<Target> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Imagen a la izquierda
-          Image(
-            image: AssetImage(widget.data.imagenes[_indiceImagen]),
+          Image.network(
+            widget.data.imagenes[_indiceImagen],
             width: 100,
             height: 100,
             fit: BoxFit.contain,

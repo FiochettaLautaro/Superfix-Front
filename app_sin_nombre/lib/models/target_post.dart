@@ -1,4 +1,4 @@
-import 'package:app_sin_nombre/widgets/home_widgets/cards/target.dart';
+import 'package:app_sin_nombre/widgets/home_widgets/target/target.dart';
 
 class Target_post {
   String title;
