@@ -1,13 +1,21 @@
 import 'dart:convert';
+import 'package:app_sin_nombre/globals.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_sin_nombre/models/user.dart';
 
 class UserService {
-  final String baseUrl = "http://192.168.1.33:5000/api/users/";
+  final String baseUrl = "http://10.0.2.2:5000/api/users/";
 
   Future<List<AppUser>> getUsers() async {
     try {
-      final response = await http.get(Uri.parse(baseUrl));
+      await Globals.refreshIdToken();
+      final response = await http.get(
+        Uri.parse(baseUrl),
+        headers: {
+          'Authorization': 'Bearer ${Globals.idToken}',
+          'Content-Type': 'application/json',
+        },
+      );
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map((user) => AppUser.fromJson(user)).toList();
@@ -21,7 +29,14 @@ class UserService {
 
   Future<AppUser?> getUserById(String id) async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/$id"));
+      /*await Globals.refreshIdToken();*/
+      final response = await http.get(
+        Uri.parse("$baseUrl$id"),
+        headers: {
+          'Authorization': 'Bearer ${Globals.idToken}',
+          'Content-Type': 'application/json',
+        },
+      );
       if (response.statusCode == 200) {
         return AppUser.fromJson(json.decode(response.body));
       } else if (response.statusCode == 404) {
@@ -37,9 +52,13 @@ class UserService {
 
   Future<void> createUser(AppUser user) async {
     try {
+      /*await Globals.refreshIdToken();*/
       final response = await http.post(
         Uri.parse(baseUrl),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'Authorization': 'Bearer ${Globals.idToken}',
+          'Content-Type': 'application/json',
+        },
         body: json.encode(user.toJson()),
       );
       print('POST $baseUrl');
@@ -63,9 +82,13 @@ class UserService {
 
   Future<void> updateUser(AppUser user) async {
     try {
+      await Globals.refreshIdToken();
       final response = await http.put(
         Uri.parse("$baseUrl/${user.uid}"),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'Authorization': 'Bearer ${Globals.idToken}',
+          'Content-Type': 'application/json',
+        },
         body: json.encode(user.toJson()),
       );
       if (response.statusCode != 200) {
@@ -78,7 +101,14 @@ class UserService {
 
   Future<void> deleteUser(String id) async {
     try {
-      final response = await http.delete(Uri.parse("$baseUrl/$id"));
+      await Globals.refreshIdToken();
+      final response = await http.delete(
+        Uri.parse("$baseUrl$id"),
+        headers: {
+          'Authorization': 'Bearer ${Globals.idToken}',
+          'Content-Type': 'application/json',
+        },
+      );
       if (response.statusCode != 204) {
         throw Exception("Failed to delete user");
       }

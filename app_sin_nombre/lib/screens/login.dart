@@ -2,6 +2,7 @@ import 'package:app_sin_nombre/services/auth_service.dart';
 import 'package:app_sin_nombre/widgets/login/barra_superior.dart';
 import 'package:flutter/material.dart';
 import 'package:app_sin_nombre/models/user.dart' as model;
+import 'package:app_sin_nombre/globals.dart';
 
 class MyLoginPage extends StatefulWidget {
   const MyLoginPage({super.key});
@@ -45,6 +46,25 @@ class LoginPage extends State<MyLoginPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color.fromARGB(
+                                255,
+                                43,
+                                43,
+                                43,
+                              ), // Color normal
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Colors.red, // Color cuando está enfocado
+                              width: 2,
+                            ),
+                          ),
                         ),
                         keyboardType: TextInputType.emailAddress,
                       ),
@@ -55,6 +75,25 @@ class LoginPage extends State<MyLoginPage> {
                           labelText: "Contraseña",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Color.fromARGB(
+                                255,
+                                43,
+                                43,
+                                43,
+                              ), // Color normal
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Colors.red, // Color cuando está enfocado
+                              width: 2,
+                            ),
                           ),
                         ),
                         obscureText: true,
@@ -81,7 +120,7 @@ class LoginPage extends State<MyLoginPage> {
                             authService
                                 .signInWithEmail(email, password)
                                 .then((user) {
-                                  if (user != null) {
+                                  if (user) {
                                     Navigator.pushReplacementNamed(
                                       context,
                                       '/home',
@@ -127,8 +166,9 @@ class LoginPage extends State<MyLoginPage> {
                           onPressed: () async {
                             final authService = AuthService();
                             await authService.signInWithGoogle();
-                            final user = await authService.getCurrentUser();
-                            if (user != null) {
+                            // Espera a que el UID esté asignado
+                            if (Globals.userId != null &&
+                                Globals.userId!.isNotEmpty) {
                               Navigator.pushReplacementNamed(context, '/home');
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -149,7 +189,7 @@ class LoginPage extends State<MyLoginPage> {
                             "Continuar con Google",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black87,
+                              color: Color.fromARGB(255, 43, 43, 43),
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
@@ -157,7 +197,41 @@ class LoginPage extends State<MyLoginPage> {
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(color: Colors.grey),
+                              side: const BorderSide(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            Navigator.pushNamed(context, '/register');
+                          },
+                          label: const Text(
+                            "Crear una cuenta",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 43, 43, 43),
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              255,
+                              224,
+                              224,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(
+                                color: Color.fromARGB(0, 255, 252, 252),
+                              ),
                             ),
                           ),
                         ),

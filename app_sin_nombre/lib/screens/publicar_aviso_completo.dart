@@ -45,6 +45,9 @@ class _PublicarAvisoCompletoState extends State<PublicarAvisoCompleto> {
   bool _subiendo = false;
   bool _cancelarSubida = false;
 
+  List<Map<String, String>> _rubros = [];
+  bool _rubrosCargando = true;
+
   Future<String?> _subirArchivoFirebase(
     PlatformFile file,
     String carpeta,
@@ -236,227 +239,132 @@ class _PublicarAvisoCompletoState extends State<PublicarAvisoCompleto> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _cargarRubros();
+  }
+
+  Future<void> _cargarRubros() async {
+    final rubros = await TargetService().getRubros();
+    setState(() {
+      _rubros = rubros.map((r) => {'id': r.id, 'nombre': r.nombre}).toList();
+      _rubrosCargando = false;
+    });
+  }
+
+  Widget _buildRubrosDropdown() {
+    if (_rubrosCargando) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: 'Rubro (obligatorio)',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        filled: true,
+        fillColor: Colors.grey[50],
+        prefixIcon: const Icon(Icons.category),
+      ),
+      value: _rubroSeleccionadoId,
+      items:
+          _rubros.map((rubro) {
+            return DropdownMenuItem<String>(
+              value: rubro['id'],
+              child: Text(rubro['nombre'] ?? ''),
+            );
+          }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _rubroSeleccionadoId = value;
+          _rubroSeleccionadoNombre =
+              _rubros.firstWhere((r) => r['id'] == value)['nombre'];
+        });
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: blanco,
       appBar: AppBar(
         title: const Text('Publicar Aviso'),
         backgroundColor: blanco,
-        foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+        foregroundColor: Colors.black,
+        elevation: 1,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Paso 1: Datos del aviso
             paso(
-              'Paso 1: Datos del aviso',
+              'Datos del aviso',
               Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.yellow[100],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.amber, width: 1),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.warning, color: Colors.amber),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '¡Seleccionar Rubro es obligatorio!',
-                            style: TextStyle(
-                              color: Colors.amber[900],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  TextField(
-                    controller: _tituloController,
-                    decoration: const InputDecoration(labelText: 'Título'),
-                  ),
-                  TextField(
-                    controller: _descripcionController,
-                    decoration: const InputDecoration(labelText: 'Descripción'),
+                  const SizedBox(height: 8),
+                  _buildTextField(_tituloController, 'Título', Icons.title),
+                  const SizedBox(height: 8),
+                  _buildTextField(
+                    _descripcionController,
+                    'Descripción',
+                    Icons.description,
+                    maxLines: 3,
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: rojoPastel,
-                      foregroundColor: blanco,
-                    ),
-                    onPressed: () async {
-                      final rubros = await TargetService().getRubros();
-                      final seleccionado =
-                          await showModalBottomSheet<Map<String, String>>(
-                            context: context,
-                            builder:
-                                (context) => ListView(
-                                  children:
-                                      rubros
-                                          .map(
-                                            (rubro) => ListTile(
-                                              title: Text(rubro.nombre),
-                                              onTap:
-                                                  () => Navigator.pop(context, {
-                                                    'id': rubro.id,
-                                                    'nombre': rubro.nombre,
-                                                  }),
-                                            ),
-                                          )
-                                          .toList(),
-                                ),
-                          );
-                      if (seleccionado != null) {
-                        setState(() {
-                          _rubroSeleccionadoId = seleccionado['id'];
-                          _rubroSeleccionadoNombre =
-                              seleccionado['nombre'] ?? '';
-                        });
-                      }
-                    },
-                    child: Text(
-                      _rubroSeleccionadoNombre ??
-                          'Seleccionar Rubro (obligatorio)',
-                    ),
-                  ),
+                  _buildRubrosDropdown(),
                 ],
               ),
             ),
+            // Paso 2: Ubicación
             paso(
-              'Paso 2: Ubicación',
+              'Ubicación',
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.map),
-                    label: const Text('Seleccionar desde el mapa'),
-                    onPressed: () async {
-                      final LatLng? result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const MapaScreen()),
-                      );
-                      if (result != null) {
-                        setState(() {
-                          _latitud = result.latitude;
-                          _longitud = result.longitude;
-                        });
-                        // Geocodificación inversa con Nominatim
-                        final url = Uri.parse(
-                          'https://nominatim.openstreetmap.org/reverse?format=json&lat=${result.latitude}&lon=${result.longitude}&zoom=18&addressdetails=1',
-                        );
-                        final response = await http.get(
-                          url,
-                          headers: {'User-Agent': 'FlutterApp'},
-                        );
-                        if (response.statusCode == 200) {
-                          final data = jsonDecode(response.body);
-                          final address = data['address'] ?? {};
-                          setState(() {
-                            _ciudadController.text =
-                                address['city'] ??
-                                address['town'] ??
-                                address['village'] ??
-                                _ciudadController.text;
-                            _direccionController.text =
-                                address['road'] != null
-                                    ? '${address['road']} ${address['house_number'] ?? ''}'
-                                        .trim()
-                                    : _direccionController.text;
-                            _localidadController.text =
-                                address['state'] ??
-                                address['suburb'] ??
-                                _localidadController.text;
-                          });
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'No se seleccionó una ubicación válida.',
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: rojoPastel,
-                      foregroundColor: blanco,
-                    ),
+                  _buildMapButton(),
+                  const SizedBox(height: 8),
+                  _buildLocationInfo(),
+                ],
+              ),
+            ),
+            // Paso 3: Archivos
+            paso(
+              'Archivos (opcional)',
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildFileSection(
+                    'Matrículas',
+                    _matriculas,
+                    3,
+                    _pickFiles,
+                    _removeFile,
                   ),
                   const SizedBox(height: 8),
-                  if (_latitud != null && _longitud != null)
-                    Text(
-                      'Ubicación seleccionada: ($_latitud, $_longitud)',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                  _buildFileSection(
+                    'Certificaciones',
+                    _certificaciones,
+                    3,
+                    _pickFiles,
+                    _removeFile,
+                  ),
                 ],
               ),
             ),
+            // Paso 4: Fotos
             paso(
-              'Paso 3: Archivos (opcional)',
+              'Fotos de trabajos (máx 6)',
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Formatos permitidos para matrículas y certificaciones: PDF, JPG, JPEG, PNG, HEIC',
-                    style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                  _buildFileSection(
+                    'Fotos',
+                    _fotos,
+                    6,
+                    _pickFiles,
+                    _removeFile,
                   ),
-                  const SizedBox(height: 4),
-                  ElevatedButton(
-                    onPressed: () => _pickFiles(_matriculas, 3),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: rojoPastel,
-                      foregroundColor: blanco,
-                    ),
-                    child: Text(
-                      'Seleccionar Matrículas (${_matriculas.length}/3)',
-                    ),
-                  ),
-                  if (_matriculas.isNotEmpty)
-                    _listaArchivos(
-                      _matriculas,
-                      (i) => _removeFile(_matriculas, i),
-                    ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () => _pickFiles(_certificaciones, 3),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: rojoPastel,
-                      foregroundColor: blanco,
-                    ),
-                    child: Text(
-                      'Seleccionar Certificaciones (${_certificaciones.length}/3)',
-                    ),
-                  ),
-                  if (_certificaciones.isNotEmpty)
-                    _listaArchivos(
-                      _certificaciones,
-                      (i) => _removeFile(_certificaciones, i),
-                    ),
-                ],
-              ),
-            ),
-            paso(
-              'Paso 4: Fotos de trabajos (máx 6)',
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _pickFiles(_fotos, 6),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: rojoPastel,
-                      foregroundColor: blanco,
-                    ),
-                    child: Text('Seleccionar Fotos (${_fotos.length}/6)'),
-                  ),
-                  if (_fotos.isNotEmpty)
-                    _listaArchivos(_fotos, (i) => _removeFile(_fotos, i)),
                 ],
               ),
             ),
@@ -478,22 +386,173 @@ class _PublicarAvisoCompletoState extends State<PublicarAvisoCompleto> {
                   },
                 ),
               ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.publish),
-              label: const Text('Publicar Aviso'),
-              onPressed: _publicar,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: rojoPastel,
-                foregroundColor: blanco,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-            ),
+            _buildPublishButton(),
           ],
         ),
       ),
     );
   }
+
+  // Widgets auxiliares para mejor UX
+  Widget _buildWarning() => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.yellow[100],
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: Colors.amber, width: 1),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.warning, color: Colors.amber),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            '¡Seleccionar Rubro es obligatorio!',
+            style: TextStyle(
+              color: Colors.amber[900],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    int maxLines = 1,
+  }) => TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      filled: true,
+      fillColor: Colors.grey[50],
+    ),
+    maxLines: maxLines,
+  );
+
+  Widget _buildMapButton() => ElevatedButton.icon(
+    icon: const Icon(Icons.map),
+    label: const Text('Seleccionar desde el mapa'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: rojoPastel,
+      foregroundColor: blanco,
+      minimumSize: const Size.fromHeight(48),
+    ),
+    onPressed: () async {
+      final LatLng? result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const MapaScreen()),
+      );
+      if (result != null) {
+        setState(() {
+          _latitud = result.latitude;
+          _longitud = result.longitude;
+        });
+        // Geocodificación inversa con Nominatim
+        final url = Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse?format=json&lat=${result.latitude}&lon=${result.longitude}&zoom=18&addressdetails=1',
+        );
+        final response = await http.get(
+          url,
+          headers: {'User-Agent': 'FlutterApp'},
+        );
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final address = data['address'] ?? {};
+          setState(() {
+            _ciudadController.text =
+                address['city'] ??
+                address['town'] ??
+                address['village'] ??
+                _ciudadController.text;
+            _direccionController.text =
+                address['road'] != null
+                    ? '${address['road']} ${address['house_number'] ?? ''}'
+                        .trim()
+                    : _direccionController.text;
+            _localidadController.text =
+                address['state'] ??
+                address['suburb'] ??
+                _localidadController.text;
+          });
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No se seleccionó una ubicación válida.'),
+          ),
+        );
+      }
+    },
+  );
+
+  Widget _buildLocationInfo() =>
+      (_latitud != null && _longitud != null)
+          ? Card(
+            color: Colors.green[50],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Ubicación seleccionada: ($_latitud, $_longitud)',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+          : const SizedBox.shrink();
+
+  Widget _buildFileSection(
+    String label,
+    List<PlatformFile> archivos,
+    int maxFiles,
+    Future<void> Function(List<PlatformFile>, int) pickFiles,
+    void Function(List<PlatformFile>, int) removeFile,
+  ) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      ElevatedButton.icon(
+        icon: const Icon(Icons.attach_file),
+        label: Text('Seleccionar $label (${archivos.length}/$maxFiles)'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: rojoPastel,
+          foregroundColor: blanco,
+          minimumSize: const Size.fromHeight(40),
+        ),
+        onPressed: () => pickFiles(archivos, maxFiles),
+      ),
+      if (archivos.isNotEmpty)
+        Wrap(
+          spacing: 8,
+          children: List.generate(
+            archivos.length,
+            (i) => Chip(
+              label: Text(archivos[i].name, overflow: TextOverflow.ellipsis),
+              backgroundColor: blanco,
+              deleteIcon: const Icon(Icons.close),
+              onDeleted: () => removeFile(archivos, i),
+            ),
+          ),
+        ),
+    ],
+  );
+
+  Widget _buildPublishButton() => ElevatedButton.icon(
+    icon: const Icon(Icons.publish),
+    label: const Text('Publicar Aviso'),
+    onPressed: _publicar,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: rojoPastel,
+      foregroundColor: blanco,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      minimumSize: const Size.fromHeight(48),
+      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+  );
 }

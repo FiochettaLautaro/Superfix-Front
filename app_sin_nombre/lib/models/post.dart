@@ -1,3 +1,5 @@
+import 'package:app_sin_nombre/models/comentario.dart';
+
 class Post {
   final String uid;
   final List<String> rubs;
@@ -8,6 +10,7 @@ class Post {
   final List<String> certificaciones; // solo urls
   final List<String> fotos;
   final DateTime fechaPost;
+  final List<Comentario>? comentarios;
 
   Post({
     required this.uid,
@@ -19,6 +22,7 @@ class Post {
     required this.certificaciones,
     required this.fotos,
     required this.fechaPost,
+    this.comentarios,
   });
 
   Map<String, dynamic> toJson() => {
@@ -31,7 +35,33 @@ class Post {
     'certificaciones': certificaciones,
     'fotos': fotos,
     'fecha_post': fechaPost.toIso8601String(),
+    'comentarios': comentarios?.map((c) => c.toJson()).toList(),
   };
+
+  static Post fromJson(Map<String, dynamic> jsonData) {
+    return Post(
+      uid: jsonData['uid'] ?? '',
+      rubs:
+          (jsonData['rubs'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      title: jsonData['title'] ?? '',
+      description: jsonData['description'] ?? '',
+      ubicacion: Ubicacion.fromJson(jsonData['ubicacion'] ?? {}),
+      matricula: Matricula.fromJson(jsonData['matricula'] ?? {}),
+      certificaciones:
+          (jsonData['certificaciones'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      fotos:
+          (jsonData['fotos'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      fechaPost:
+          DateTime.tryParse(jsonData['fecha_post'] ?? '') ?? DateTime.now(),
+      comentarios:
+          (jsonData['opiniones'] as List?)
+              ?.map((e) => Comentario.fromJson(e))
+              .toList(),
+    );
+  }
 }
 
 class Ubicacion {
@@ -56,10 +86,24 @@ class Ubicacion {
     'latitud': latitud,
     'longitud': longitud,
   };
+
+  factory Ubicacion.fromJson(Map<String, dynamic> json) {
+    return Ubicacion(
+      ciudad: json['ciudad'] ?? '',
+      direccion: json['direccion'] ?? '',
+      localidad: json['localidad'] ?? '',
+      latitud: json['latitud']?.toString() ?? '',
+      longitud: json['longitud']?.toString() ?? '',
+    );
+  }
 }
 
 class Matricula {
   final String url;
   Matricula({required this.url});
   Map<String, dynamic> toJson() => {'url': url};
+
+  factory Matricula.fromJson(Map<String, dynamic> json) {
+    return Matricula(url: json['url'] ?? '');
+  }
 }

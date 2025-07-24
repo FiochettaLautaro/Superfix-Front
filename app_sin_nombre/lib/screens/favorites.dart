@@ -1,7 +1,7 @@
 import 'package:app_sin_nombre/models/target_post.dart' as model;
 import 'package:app_sin_nombre/widgets/home_widgets/target/target.dart' as card;
-import 'package:app_sin_nombre/services/home_service.dart';
-import 'package:flutter/material.dart';
+import 'package:app_sin_nombre/services/home_service.dart'; // Importamos el servicio de home para obtener las publicaciones favoritas
+import 'package:flutter/material.dart'; // importamos el paquete de material para usar widgets de flutter
 import 'package:app_sin_nombre/widgets/home_widgets/barra_superior.dart';
 
 class FavoritesPage extends StatefulWidget {

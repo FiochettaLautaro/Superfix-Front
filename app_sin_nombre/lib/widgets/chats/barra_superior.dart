@@ -27,13 +27,22 @@ class SuperFixAppBar extends StatelessWidget implements PreferredSizeWidget {
             automaticallyImplyLeading: true,
             centerTitle: true,
             title: Text(
-              "SuperFix",
+              "Chats",
               style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFFF5963),
               ),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.list),
+                iconSize: 32,
+                onPressed: () {
+                  Navigator.pushNamed(context, '/menu');
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -41,9 +50,5 @@ class SuperFixAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight); //Define la altura de la barra personalizada para que Flutter la dibuje correctamente en la parte superior de la pantalla.
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-
-
-
-//kToolbarHeight es la altura estándar de un AppBar (56.0 píxeles)

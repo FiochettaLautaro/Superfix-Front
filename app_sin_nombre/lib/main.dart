@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:app_sin_nombre/screens/home.dart';
 import 'package:app_sin_nombre/screens/login.dart';
+import 'package:app_sin_nombre/screens/main_scaffold.dart';
+import 'package:app_sin_nombre/screens/publicar_aviso_completo.dart';
+import 'package:app_sin_nombre/screens/register.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await initializeDateFormatting('es', null);
   runApp(const MyApp());
 }
 
@@ -14,12 +19,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Uno Nunca Sabe',
+      title: '',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 183, 62, 58),
+        ),
       ),
       home: const MyLoginPage(),
-      routes: {'/home': (context) => const MyHomePage()},
+      routes: {
+        '/home': (context) => const MainScaffold(),
+        '/crear_aviso': (context) => const PublicarAvisoCompleto(),
+        '/register': (context) => const MyRegisterPage(),
+        '/login': (context) => const MyLoginPage(),
+        // Puedes agregar otras rutas aquí
+      },
+      onUnknownRoute:
+          (settings) => MaterialPageRoute(
+            builder:
+                (context) => Scaffold(
+                  appBar: AppBar(title: const Text('Ruta no encontrada')),
+                  body: const Center(
+                    child: Text('La ruta solicitada no existe.'),
+                  ),
+                ),
+          ),
     );
   }
 }

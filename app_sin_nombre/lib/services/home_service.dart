@@ -1,17 +1,25 @@
 import 'dart:convert';
 import 'package:app_sin_nombre/globals.dart';
+import 'package:app_sin_nombre/models/post.dart';
 import 'package:app_sin_nombre/models/rub.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_sin_nombre/models/target_post.dart';
 
 class TargetService {
-  final String baseUrl = "http://192.168.1.33:5000/api/post";
-  final String baseUrl1 = "http://192.168.1.33:5000/api/rubs/";
-  final String baseUrl2 = "http://192.168.1.33:5000/api/favorites/one";
-  final String baseUrl3 = "http://192.168.1.33:5000/api/favorites";
+  final String baseUrl = "http://10.0.2.2:5000/api/post";
+  final String baseUrl1 = "http://10.0.2.2:5000/api/rubs/";
+  final String baseUrl2 = "http://10.0.2.2:5000/api/favorites/one";
+  final String baseUrl3 = "http://10.0.2.2:5000/api/favorites";
 
   Future<List<Target_post>> fetchTargets() async {
-    final response = await http.get(Uri.parse(baseUrl));
+    await Globals.refreshIdToken();
+    final response = await http.get(
+      Uri.parse(baseUrl),
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
@@ -22,10 +30,17 @@ class TargetService {
     }
   }
 
-  // para obtener el nombre del rubro por su ID
+  /// Obtiene el nombre de un rubro a partir de su ID.
   Future<String> fetchRub(String id_rub) async {
+    await Globals.refreshIdToken();
     var url = "$baseUrl1$id_rub";
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -38,7 +53,14 @@ class TargetService {
   }
 
   Future<List<Rubro>> getRubros() async {
-    final response = await http.get(Uri.parse(baseUrl1));
+    await Globals.refreshIdToken();
+    final response = await http.get(
+      Uri.parse(baseUrl1),
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
       return jsonList.map((json) => Rubro.fromJson(json)).toList();
@@ -48,8 +70,13 @@ class TargetService {
   }
 
   Future<Target_post> getPostById(String id) async {
+    await Globals.refreshIdToken();
     final response = await http.get(
-      Uri.parse('http://192.168.1.33:5000/api/post/searchById/$id'),
+      Uri.parse('http://10.0.2.2:5000/api/post/searchById/$id'),
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
     );
     print("[getPostById] Post ID: $id");
     print("[getPostById] Response: ${response.body}");
@@ -61,12 +88,35 @@ class TargetService {
     }
   }
 
+  Future<Post> getPostByIdDetalles(String id) async {
+    await Globals.refreshIdToken();
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:5000/api/post/searchById/$id'),
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
+    );
+    print("[getPostById] Post ID: $id");
+    print("[getPostById] Response: ${response.body}");
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return Post.fromJson(jsonData);
+    } else {
+      throw Exception("Error al cargar el post con ID: $id");
+    }
+  }
+
   Future<List<Target_post>> getFavorites() async {
+    await Globals.refreshIdToken();
     String? user_id = Globals.userId;
-    var url = "http://192.168.1.33:5000/api/favorites/all/$user_id";
+    var url = "http://10.0.2.2:5000/api/favorites/all/$user_id";
     final response = await http.get(
       Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
     );
     print("[getFavorites] Response: ${response.body}");
     if (response.statusCode == 200) {
@@ -128,11 +178,14 @@ class TargetService {
     if (longitud != null) queryParameters['longitud'] = longitud.toString();
     if (latitud != null) queryParameters['latitud'] = latitud.toString();
 
-    final uri = Uri.http('192.168.1.33:5000', '/api/post', queryParameters);
+    final uri = Uri.http('10.0.2.2:5000', '/api/post', queryParameters);
 
     final response = await http.get(
       uri,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -144,11 +197,15 @@ class TargetService {
   }
 
   Future<bool> likeRub(String post_id, String user_id) async {
+    await Globals.refreshIdToken();
     var url = "$baseUrl2/$user_id/$post_id";
     print('URL GET: $url');
     final response = await http.get(
       Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -161,29 +218,39 @@ class TargetService {
 
   /// Crea o elimina un favorito
   Future<bool> AdlikeRub(String post_id) async {
+    //await Globals.refreshIdToken();
     String? user_id = Globals.userId;
 
-    var url = "$baseUrl2/$user_id/$post_id";
     if (user_id == null) {
       print("Error: user_id es null");
       return false;
     }
 
+    var url = "$baseUrl2/$user_id/$post_id";
     Map<String, dynamic> persona = {"user_uid": user_id, "post_id": post_id};
     print('URL GET: $url');
     print('user_uid: $user_id, post_id: $post_id');
+
     final response = await http.get(
       Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        'Authorization': 'Bearer ${Globals.idToken}',
+        'Content-Type': 'application/json',
+      },
     );
+
     final data = json.decode(response.body);
     print(data['Mensaje']);
+
     if (data['Mensaje'] == "Favorite no encontrado" ||
         data['Mensaje'] == "Favorite encontrado") {
       var url20 = "$baseUrl3/CreaDelete";
       final response20 = await http.post(
         Uri.parse(url20),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'Authorization': 'Bearer ${Globals.idToken}',
+          'Content-Type': 'application/json',
+        },
         body: json.encode(persona),
       );
       print(response20);

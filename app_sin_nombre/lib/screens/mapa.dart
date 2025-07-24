@@ -39,14 +39,13 @@ class _MapaScreenState extends State<MapaScreen> {
               _selectedLocation = latlng;
             });
           },
-          // ignore: deprecated_member_use
           interactiveFlags:
               InteractiveFlag.all, // Esto habilita todos los gestos
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: const ['a', 'b', 'c'],
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.app_sin_nombre2',
           ),
           if (_selectedLocation != null)
             MarkerLayer(

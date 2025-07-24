@@ -7,6 +7,7 @@ class AppUser {
   final String? url_img;
   final String? number_cel;
 
+  // Constructor correcto
   AppUser({
     required this.uid,
     this.name,
@@ -14,6 +15,7 @@ class AppUser {
     this.url_img,
     this.number_cel,
   });
+
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
       uid: json['uid'] as String,
@@ -23,6 +25,7 @@ class AppUser {
       number_cel: json['number_cel'] as String?,
     );
   }
+
   // Factory para convertir desde Firebase User
   factory AppUser.fromFirebase(User firebaseUser) {
     return AppUser(

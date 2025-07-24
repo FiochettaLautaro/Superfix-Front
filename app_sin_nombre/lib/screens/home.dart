@@ -1,6 +1,7 @@
-import 'package:app_sin_nombre/models/search.dart';
-import 'package:app_sin_nombre/models/target_post.dart' as model;
-import 'package:app_sin_nombre/models/user.dart';
+import 'package:app_sin_nombre/models/search.dart'; // modelo de filtros de busqueda
+import 'package:app_sin_nombre/models/target_post.dart'
+    as model; //modelo de las preview posts
+import 'package:app_sin_nombre/models/user.dart'; // modelo de User
 import 'package:app_sin_nombre/screens/main_scaffold.dart';
 import 'package:app_sin_nombre/screens/publicar_aviso_completo.dart';
 import 'package:app_sin_nombre/screens/select_rubs.dart';
@@ -8,9 +9,9 @@ import 'package:app_sin_nombre/widgets/home_widgets/target/target.dart' as card;
 import 'package:flutter/material.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/barra_superior.dart';
 import 'package:app_sin_nombre/widgets/home_widgets/search/search.dart';
-import 'package:app_sin_nombre/services/home_service.dart';
-import 'package:app_sin_nombre/globals.dart';
-import 'package:app_sin_nombre/screens/favorites.dart';
+import 'package:app_sin_nombre/services/home_service.dart'; //Importamos services de home service para: darle soporte al Search, y pdarla soporte a otras funcionalidades
+import 'package:app_sin_nombre/globals.dart'; // impostamos las variables globales
+import 'package:app_sin_nombre/screens/favorites.dart'; // importamos pantalla de favoritos
 
 void main() {
   runApp(const MyApp());
@@ -24,10 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const MainScaffold(),
-      routes: {
-        '/crear_aviso': (_) => const PublicarAvisoCompleto(),
-        // Agrega más rutas si lo necesitas
-      },
+      routes: {'/crear_aviso': (_) => const PublicarAvisoCompleto()},
     );
   }
 }
@@ -66,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onNavTapped(int index) {
+    /// con esto permitimos la navegacion entre las diferentes pantallas de la app dentro de un Scaffold
     setState(() {
       _selectedIndex = index;
     });
@@ -78,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onCreatePost() {
+    // esta funcion permite navegar a la pantalla de crear un nuevo aviso
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const PublicarAvisoCompleto()),
@@ -86,108 +86,78 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: SuperFixAppBar(),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(
-                child: Text(
-                  "Encuentra Tu Profesional",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                ),
+    return Scaffold(
+      appBar: SuperFixAppBar(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Center(
+              child: Text(
+                "Encuentra Tu Profesional",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10),
-              SuperSearch(onFilterChanged: _actualizarBusqueda),
-              const SizedBox(height: 16),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(144, 233, 227, 227),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    ValueListenableBuilder<FiltrosBusqueda>(
-                      valueListenable: Globals.filtrosNotifier,
-                      builder: (context, filtros, _) {
-                        return FutureBuilder<List<model.Target_post>>(
-                          future: _targetService.searchApp(
-                            text: filtros.text,
-                            rubros: filtros.rubros,
-                            matricula: filtros.matriculado,
-                            latitud: filtros.latitud,
-                            longitud: filtros.longitud,
-                          ),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else if (snapshot.hasError ||
-                                !snapshot.hasData ||
-                                snapshot.data!.isEmpty) {
-                              return const Text(
-                                "No se encontraron profesionales.",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              );
-                            } else {
-                              return ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: snapshot.data!.length,
-                                separatorBuilder:
-                                    (context, index) =>
-                                        const SizedBox(height: 4),
-                                itemBuilder: (context, index) {
-                                  final post = snapshot.data![index];
-                                  return card.Target(data: post);
-                                },
-                              );
-                            }
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) {
-            if (index == 3) {
-              _onCreatePost();
-            } else {
-              _onNavTapped(index);
-            }
-          },
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xFFFF5963),
-          unselectedItemColor: Colors.grey,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              label: 'Favoritos',
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_box_outlined),
-              label: 'Crear Aviso',
+            const SizedBox(height: 10),
+            SuperSearch(onFilterChanged: _actualizarBusqueda),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(144, 233, 227, 227),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  ValueListenableBuilder<FiltrosBusqueda>(
+                    valueListenable: Globals.filtrosNotifier,
+                    builder: (context, filtros, _) {
+                      return FutureBuilder<List<model.Target_post>>(
+                        future: _targetService.searchApp(
+                          text: filtros.text,
+                          rubros: filtros.rubros,
+                          matricula: filtros.matriculado,
+                          latitud: filtros.latitud,
+                          longitud: filtros.longitud,
+                        ),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError ||
+                              !snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Text(
+                              "No se encontraron profesionales.",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          } else {
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: snapshot.data!.length,
+                              separatorBuilder:
+                                  (context, index) => const SizedBox(height: 4),
+                              itemBuilder: (context, index) {
+                                final post = snapshot.data![index];
+                                return card.Target(data: post);
+                              },
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
