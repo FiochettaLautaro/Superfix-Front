@@ -1,6 +1,6 @@
 # Superfix-Front
 
-Aplicación Flutter multiplataforma para publicar avisos y gestionar usuarios.
+Superfix es una plataforma digital que busca conectar a clientes con profesionales de distintos rubros para la resolución de problemas y servicios en el hogar o la empresa. La aplicación permite a los técnicos publicar sus avisos de servicios, adjuntar certificaciones o imágenes de trabajos, gestionar favoritos y recibir contrataciones de manera sencilla y segura.
 
 ## Descripción
 
