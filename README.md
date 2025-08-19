@@ -4,7 +4,8 @@ Aplicación Flutter multiplataforma para publicar avisos y gestionar usuarios.
 
 ## Descripción
 
-Este proyecto permite publicar avisos, subir archivos (PDF, imágenes), gestionar favoritos y autenticarse con Google o email. Utiliza Firebase Storage y consume una API REST.
+Este proyecto es una aplicación móvil que permite a los usuarios publicar avisos, subir archivos (PDF e imágenes), gestionar favoritos y autenticarse mediante Google o correo electrónico.
+La aplicación utiliza Firebase Storage para el manejo de archivos y se conecta a una API REST para la gestión de datos.
 
 ## Características
 
